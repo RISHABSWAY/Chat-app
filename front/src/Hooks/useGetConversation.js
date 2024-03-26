@@ -1,15 +1,25 @@
-import { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const useGetConversation = () => {
   const [loading, setLoading] = useState(false);
   const [conversations, setConversations] = useState([]);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return;
+    }
+
     const getConversation = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`http://localhost:5000/api/users`);
+        const res = await fetch(`http://localhost:5000/api/users`, {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        });
         const data = await res.json();
         if (data.error) {
           throw new Error(data.error);
@@ -25,7 +35,7 @@ const useGetConversation = () => {
     getConversation();
   }, []);
 
-  return { loading, conversations }; // Return as an object
+  return { loading, conversations };
 };
 
 export default useGetConversation;
